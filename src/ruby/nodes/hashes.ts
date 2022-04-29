@@ -87,17 +87,19 @@ export const printAssoc: Plugin.Printer<Ruby.Assoc> = (path, opts, print) => {
   const { keyPrinter } = path.getParentNode() as HashContents;
 
   const parts = [path.call((keyPath) => keyPrinter(keyPath, print), "key")];
-  const valueDoc = path.call(print, "value");
+  const valueDoc = node.value ? path.call(print, "value") : "";
 
   // If we're printing a child hash then we want it to break along with its
   // parent hash, so we don't group the parts.
-  if (node.value.type === "hash") {
+  if (node.value?.type === "hash") {
     parts.push(" ", valueDoc);
     return parts;
   }
 
-  if (!skipAssignIndent(node.value) || node.key.comments) {
+  if ((node.value && !skipAssignIndent(node.value)) || node.key.comments) {
     parts.push(indent([line, valueDoc]));
+  } else if (!node.value) {
+    parts.push("", valueDoc);
   } else {
     parts.push(" ", valueDoc);
   }

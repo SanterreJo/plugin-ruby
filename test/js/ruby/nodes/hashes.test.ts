@@ -361,4 +361,88 @@ describe("hash", () => {
 
     expect(content).toChangeFormat(expected);
   });
+  describe("values omitted in hash literal", () => {
+    test("basic", () => {
+      const content = ruby(`
+        { foo: }
+      `);
+      expect(content).toMatchFormat();
+    });
+    test("multiple", () => {
+      const content = ruby(`
+        { foo:, bar: }
+      `);
+      expect(content).toMatchFormat();
+    });
+    test("multiple wrap", () => {
+      const content = ruby(`
+        { foo:, bar:, baz:, qux:, quux:, corge:, grault:, garply:, waldo:, fred:, plugh:, xyzzy: }
+      `);
+      const expected = ruby(`
+        {
+          foo:,
+          bar:,
+          baz:,
+          qux:,
+          quux:,
+          corge:,
+          grault:,
+          garply:,
+          waldo:,
+          fred:,
+          plugh:,
+          xyzzy:
+        }
+      `);
+      expect(content).toChangeFormat(expected);
+    });
+    test("long key", () => {
+      const content = ruby(`
+        { ${long}: }
+      `);
+      const expected = ruby(`
+        {
+          ${long}:
+        }
+      `);
+      expect(content).toChangeFormat(expected);
+    });
+    test("children", () => {
+      const content = ruby(`
+        { foo: { bar: } }
+      `);
+      expect(content).toMatchFormat();
+    });
+    test("children long key", () => {
+      const content = ruby(`
+        { foo: { ${long}: } }
+      `);
+      const expected = ruby(`
+        {
+          foo: {
+            ${long}:
+          }
+        }
+      `);
+      expect(content).toChangeFormat(expected);
+    });
+    test("mix", () => {
+      const content = ruby(`
+        { foo: bar, baz: }
+      `);
+      expect(content).toMatchFormat();
+    });
+    test("mix wrap", () => {
+      const content = ruby(`
+        { foo: bar, ${long}: }
+      `);
+      const expected = ruby(`
+        {
+          foo: bar,
+          ${long}:
+        }
+      `);
+      expect(content).toChangeFormat(expected);
+    });
+  })
 });

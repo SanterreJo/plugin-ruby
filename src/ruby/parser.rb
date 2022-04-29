@@ -1191,7 +1191,10 @@ class SyntaxTree < Ripper
   # :call-seq:
   #   on_assoc_new: (untyped key, untyped value) -> Assoc
   def on_assoc_new(key, value)
-    Assoc.new(key: key, value: value, location: key.location.to(value.location))
+    location = key.location
+    location = location.to(value.location) if value
+
+    Assoc.new(key: key, value: value, location: location)
   end
 
   # AssocSplat represents double-splatting a value into a hash (either a hash
